@@ -4,8 +4,9 @@
 import type { CTScanAnalysisOutput } from "@/ai/flows/ct-scan-analysis-flow";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FileText, Brain, AlertTriangle, Percent, BarChartBig } from "lucide-react"; 
+import { FileText, Brain, AlertTriangle, Percent, BarChartBig, Download } from "lucide-react"; 
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 
 interface FileInfo {
   name: string;
@@ -54,9 +55,38 @@ export default function AnalysisResults({ fileInfo, analysisResult, isLoadingAna
     );
   };
 
+  const handleExportResults = () => {
+    if (!analysisResult || !fileInfo) return;
+
+    const dataToExport = {
+      fileInformation: fileInfo,
+      analysis: analysisResult,
+    };
+
+    const jsonString = JSON.stringify(dataToExport, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    const safeFileName = fileInfo.name.replace(/[^a-z0-9_.-]/gi, '_').toLowerCase();
+    link.download = `lunglens_analysis_${safeFileName}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="mt-6 sm:mt-8">
-      <h2 className="text-2xl font-semibold mb-4 text-primary tracking-tight">Analysis & Details</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-semibold text-primary tracking-tight">Analysis & Details</h2>
+        {analysisResult && fileInfo && !isLoadingAnalysis && !isErrorResult && (
+          <Button variant="outline" size="sm" onClick={handleExportResults}>
+            <Download className="mr-2 h-4 w-4" />
+            Download Results
+          </Button>
+        )}
+      </div>
       <div className="space-y-6">
         {fileInfo && (
           <Card className="shadow-lg">
