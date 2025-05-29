@@ -7,6 +7,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FileText, Brain, AlertTriangle, Percent, BarChartBig, Download } from "lucide-react"; 
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface FileInfo {
   name: string;
@@ -23,6 +26,7 @@ interface AnalysisResultsProps {
 }
 
 export default function AnalysisResults({ fileInfo, analysisResult, isLoadingAnalysis }: AnalysisResultsProps) {
+  const { toast } = useToast();
   
   const getPredictionColor = (prediction?: "Normal" | "Malignant" | "Benign") => {
     if (!prediction) return "text-foreground";
@@ -55,25 +59,99 @@ export default function AnalysisResults({ fileInfo, analysisResult, isLoadingAna
     );
   };
 
-  const handleExportResults = () => {
-    if (!analysisResult || !fileInfo) return;
+  const handleExportResults = async () => {
+    if (!analysisResult || !fileInfo) {
+      toast({
+        title: "Cannot Export",
+        description: "No analysis results or file information available to export.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    const dataToExport = {
-      fileInformation: fileInfo,
-      analysis: analysisResult,
-    };
+    const resultsElement = document.getElementById('exportable-results-area');
+    if (!resultsElement) {
+      toast({
+        title: "Export Error",
+        description: "Could not find the results content to export. Please try again.",
+        variant: "destructive",
+      });
+      console.error("Exportable results area not found");
+      return;
+    }
 
-    const jsonString = JSON.stringify(dataToExport, null, 2);
-    const blob = new Blob([jsonString], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    const safeFileName = fileInfo.name.replace(/[^a-z0-9_.-]/gi, '_').toLowerCase();
-    link.download = `lunglens_analysis_${safeFileName}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    try {
+      const canvas = await html2canvas(resultsElement, {
+        scale: 2, // Increase scale for better resolution
+        useCORS: true, 
+        backgroundColor: window.getComputedStyle(document.documentElement).getPropertyValue('--background').trim() === '231 48% 12%' ? '#1e293b' : '#f0f4fa', // Match light/dark theme bg for canvas
+        onclone: (document) => {
+          // Ensure text colors are visible for PDF export regardless of theme
+          // This is a bit hacky, better would be to have export-specific styles
+          // For simplicity, forcing a light theme text color scheme on the cloned document
+          document.querySelectorAll('#exportable-results-area *').forEach((el) => {
+            (el as HTMLElement).style.color = 'hsl(231 48% 15%)'; // Dark text
+          });
+          document.querySelectorAll('#exportable-results-area .text-muted-foreground').forEach((el) => {
+            (el as HTMLElement).style.color = 'hsl(231 48% 40%)'; // Muted dark text
+          });
+          const predictionEl = document.querySelector('#exportable-results-area .font-bold.text-lg');
+          if (predictionEl) {
+            const prediction = analysisResult.prediction;
+            let color = 'hsl(231 48% 15%)'; // Default dark
+            if (prediction === "Normal") color = "rgb(22 163 74)"; // Green
+            else if (prediction === "Benign") color = "rgb(202 138 4)"; // Yellow
+            else if (prediction === "Malignant") color = "rgb(220 38 38)"; // Red
+             (predictionEl as HTMLElement).style.color = color;
+          }
+        }
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'pt',
+        format: 'a4',
+      });
+
+      const margin = 40; // points
+      const pdfPageWidth = pdf.internal.pageSize.getWidth();
+      const pdfPageHeight = pdf.internal.pageSize.getHeight();
+      const contentWidth = pdfPageWidth - 2 * margin;
+      const contentHeight = pdfPageHeight - 2 * margin;
+
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+      const aspectRatio = canvasWidth / canvasHeight;
+
+      let finalImgWidth = contentWidth;
+      let finalImgHeight = finalImgWidth / aspectRatio;
+
+      if (finalImgHeight > contentHeight) {
+        finalImgHeight = contentHeight;
+        finalImgWidth = finalImgHeight * aspectRatio;
+      }
+
+      const xOffset = margin + (contentWidth - finalImgWidth) / 2;
+      const yOffset = margin; // Align to top margin
+
+      pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalImgWidth, finalImgHeight);
+      
+      const safeFileName = fileInfo.name.replace(/[^a-z0-9_.-]/gi, '_').toLowerCase();
+      pdf.save(`lunglens_analysis_${safeFileName}.pdf`);
+      toast({
+        title: "Export Successful",
+        description: "Results downloaded as PDF.",
+      });
+
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast({
+        title: "PDF Generation Error",
+        description: "Could not generate PDF. Please try again or contact support.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -83,11 +161,11 @@ export default function AnalysisResults({ fileInfo, analysisResult, isLoadingAna
         {analysisResult && fileInfo && !isLoadingAnalysis && !isErrorResult && (
           <Button variant="outline" size="sm" onClick={handleExportResults}>
             <Download className="mr-2 h-4 w-4" />
-            Download Results
+            Download PDF
           </Button>
         )}
       </div>
-      <div className="space-y-6">
+      <div id="exportable-results-area" className="space-y-6">
         {fileInfo && (
           <Card className="shadow-lg">
             <CardHeader>
