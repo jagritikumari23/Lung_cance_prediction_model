@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { UploadCloud, Loader2, Search, Brain } from "lucide-react"; // Using Brain as an AI icon
+import { UploadCloud, Loader2, Search } from "lucide-react";
 
 import ImageDisplay from "@/components/image-display";
 import AnalysisResults from "@/components/analysis-results";
@@ -46,8 +46,6 @@ export default function AnalysisPage() {
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Basic check for common image types, DICOM might need more specific handling client-side if possible
-      // For now, allowing general image types as CT scans can be in JPG/PNG for review too.
       if (!file.type.startsWith("image/") && !file.name.toLowerCase().endsWith('.dcm')) {
         toast({
           title: "Invalid File Type",
@@ -87,7 +85,7 @@ export default function AnalysisPage() {
             lastModified: new Date(file.lastModified).toLocaleDateString(),
           });
         };
-        img.src = dataUri; // This will work for standard image types, not directly for DICOM rendering without a library
+        img.src = dataUri;
       };
       reader.onerror = () => {
         toast({ title: "Error", description: "Failed to read file.", variant: "destructive" });
@@ -115,7 +113,7 @@ export default function AnalysisPage() {
       console.error("AI Analysis Error:", error);
       const errorMessage = error instanceof Error ? error.message : "An unknown error occurred.";
       toast({ title: "AI Error", description: `Failed to analyze CT scan: ${errorMessage}`, variant: "destructive" });
-      setAnalysisResult({ prediction: "Normal", explanation: "Error during analysis. Could not generate prediction." }); // Provide a fallback error state
+      setAnalysisResult({ prediction: "Normal", explanation: "Error during analysis. Could not generate prediction." });
     } finally {
       setIsLoadingAnalysis(false);
     }
@@ -135,13 +133,13 @@ export default function AnalysisPage() {
                 <UploadCloud className="w-5 h-5 text-primary" />
                 Upload CT Scan
               </CardTitle>
-              <CardDescription>Select a CT scan image file from your device.</CardDescription>
+              <CardDescription>Choose a CT scan image (PNG, JPG, or DICOM) to begin. Ensure the image is clear for optimal analysis.</CardDescription>
             </CardHeader>
             <CardContent>
               <Input 
                 id="ctScanUpload" 
                 type="file" 
-                accept="image/*,.dcm" // Accept common image types and .dcm
+                accept="image/*,.dcm"
                 onChange={handleFileChange} 
                 className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer" 
               />
