@@ -1,7 +1,7 @@
 
 import type { Metadata } from 'next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Target, Zap, HeartPulse, ShieldCheck } from 'lucide-react'; // Using HeartPulse as a medical icon, added ShieldCheck
+import { Users, Target, Zap, HeartPulse, ShieldCheck, AlertTriangle } from 'lucide-react'; // Added AlertTriangle
 import Image from 'next/image';
 
 export const metadata: Metadata = {
@@ -20,6 +20,27 @@ export default function AboutPage() {
           <p className="text-lg sm:text-xl text-foreground/80 max-w-3xl mx-auto">
             Our mission is to leverage artificial intelligence to provide a powerful, accessible tool for the preliminary analysis of CT scans, aiding in the early detection of lung cancer.
           </p>
+        </div>
+      </section>
+
+      <section className="py-8">
+        <div className="container mx-auto px-4">
+          <Card className="shadow-lg border-primary/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl text-primary">
+                <AlertTriangle className="w-6 h-6 text-amber-500" />
+                Important Medical Disclaimer
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-foreground/70 space-y-2">
+              <p>
+                LungLens AI is an informational tool and is <strong>not a substitute for professional medical advice, diagnosis, or treatment</strong>. The analyses provided by our AI are intended for preliminary informational purposes only and should be used to supplement, not replace, the judgment of qualified healthcare professionals.
+              </p>
+              <p>
+                Always seek the advice of your physician or other qualified health provider with any questions you may have regarding a medical condition. Never disregard professional medical advice or delay in seeking it because of something you have read or seen on this application. Reliance on any information provided by LungLens AI is solely at your own risk.
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
