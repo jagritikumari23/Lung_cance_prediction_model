@@ -1,159 +1,107 @@
-"use client";
 
-import { useState, ChangeEvent } from "react";
-import { generateImageSummary, type ImageSummaryInput, type ImageSummaryOutput } from "@/ai/flows/image-summary";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { UploadCloud, Loader2, Search } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowRight, BarChart2, Lightbulb, Zap } from "lucide-react";
+import type { Metadata } from 'next';
+import Image from "next/image";
+import Link from "next/link";
 
-import ImageDisplay from "@/components/image-display";
-import AnalysisResults from "@/components/analysis-results";
+export const metadata: Metadata = {
+  title: 'Home - Image Insights',
+  description: 'Welcome to Image Insights. Get AI-powered insights from your images and photos.',
+};
 
-interface FileInfo {
-  name: string;
-  size: string;
-  type: string;
-  dimensions: string;
-  lastModified: string;
-}
-
-export default function ImageInsightsPage() {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [imageDataUri, setImageDataUri] = useState<string | null>(null);
-  const [fileInfo, setFileInfo] = useState<FileInfo | null>(null);
-  const [imageSummary, setImageSummary] = useState<string | null>(null);
-  const [isLoadingSummary, setIsLoadingSummary] = useState(false);
-  const { toast } = useToast();
-
-  const resetState = () => {
-    setSelectedFile(null);
-    setImageDataUri(null);
-    setFileInfo(null);
-    setImageSummary(null);
-    // Clear the file input visually
-    const fileInput = document.getElementById('imageUpload') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
-    }
-  };
-
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        toast({
-          title: "Invalid File Type",
-          description: "Please select an image file (e.g., JPG, PNG, GIF).",
-          variant: "destructive",
-        });
-        resetState();
-        return;
-      }
-
-      setSelectedFile(file);
-      setImageSummary(null);
-      setFileInfo(null);
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUri = e.target?.result as string;
-        setImageDataUri(dataUri);
-
-        const img = new window.Image();
-        img.onload = () => {
-          setFileInfo({
-            name: file.name,
-            size: `${(file.size / 1024).toFixed(2)} KB`,
-            type: file.type,
-            dimensions: `${img.naturalWidth} x ${img.naturalHeight} px`,
-            lastModified: new Date(file.lastModified).toLocaleDateString(),
-          });
-        };
-        img.onerror = () => {
-          toast({ title: "Error", description: "Could not load image to get dimensions.", variant: "destructive" });
-          setFileInfo({
-            name: file.name,
-            size: `${(file.size / 1024).toFixed(2)} KB`,
-            type: file.type,
-            dimensions: "N/A",
-            lastModified: new Date(file.lastModified).toLocaleDateString(),
-          });
-        };
-        img.src = dataUri;
-      };
-      reader.onerror = () => {
-        toast({ title: "Error", description: "Failed to read file.", variant: "destructive" });
-        resetState();
-      };
-      reader.readAsDataURL(file);
-    } else {
-      resetState();
-    }
-  };
-
-  const handleAnalyze = async () => {
-    if (!imageDataUri) {
-      toast({ title: "No Image", description: "Please select an image to analyze.", variant: "destructive" });
-      return;
-    }
-    setIsLoadingSummary(true);
-    setImageSummary(null);
-    try {
-      const input: ImageSummaryInput = { photoDataUri: imageDataUri };
-      const result: ImageSummaryOutput = await generateImageSummary(input);
-      setImageSummary(result.summary);
-      toast({ title: "Analysis Complete", description: "Image summary generated successfully." });
-    } catch (error) {
-      console.error("AI Summary Error:", error);
-      toast({ title: "AI Error", description: "Failed to generate image summary. Please try again.", variant: "destructive" });
-      setImageSummary("Could not generate summary.");
-    } finally {
-      setIsLoadingSummary(false);
-    }
-  };
-
+export default function HomePage() {
   return (
-    <div className="w-full max-w-6xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-        <div className="lg:col-span-1 space-y-6">
-          <Card className="shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <UploadCloud className="w-5 h-5 text-primary" />
-                Upload Image
-              </CardTitle>
-              <CardDescription>Select an image file from your device (PNG, JPG, GIF, etc.).</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Input 
-                id="imageUpload" 
-                type="file" 
-                accept="image/*" 
-                onChange={handleFileChange} 
-                className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 cursor-pointer" 
-              />
-            </CardContent>
-          </Card>
-
-          {selectedFile && imageDataUri && (
-            <Button onClick={handleAnalyze} disabled={isLoadingSummary} className="w-full text-base py-6 shadow-md hover:shadow-lg transition-shadow">
-              {isLoadingSummary ? (
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              ) : (
-                <Search className="mr-2 h-5 w-5" />
-              )}
-              Analyze Image
+    <div className="space-y-12">
+      <section className="text-center py-12 lg:py-16 bg-gradient-to-br from-primary/10 via-background to-background rounded-xl shadow-sm">
+        <div className="container mx-auto px-4">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-primary mb-6">
+            Unlock Insights from Your Images
+          </h1>
+          <p className="text-lg sm:text-xl text-foreground/80 max-w-3xl mx-auto mb-8">
+            Upload your images and let our advanced AI provide you with detailed analysis, summaries, and more. Simple, fast, and powerful.
+          </p>
+          <Link href="/analysis">
+            <Button size="lg" className="text-lg py-7 px-10 shadow-lg hover:shadow-xl transition-shadow">
+              Start Analyzing Now <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-          )}
+          </Link>
         </div>
+      </section>
 
-        <div className="lg:col-span-2">
-          <ImageDisplay imageDataUri={imageDataUri} fileName={selectedFile?.name} />
-          <AnalysisResults fileInfo={fileInfo} summary={imageSummary} isLoadingSummary={isLoadingSummary} />
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-semibold text-center mb-10 text-foreground">Key Features</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="shadow-lg hover:shadow-xl transition-shadow">
+              <CardHeader className="items-center text-center">
+                <div className="p-3 bg-primary/10 rounded-full mb-3">
+                  <Zap className="w-8 h-8 text-primary" />
+                </div>
+                <CardTitle className="text-xl">Instant Analysis</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center text-foreground/70">
+                Get quick and accurate AI-powered summaries and information about your uploaded images.
+              </CardContent>
+            </Card>
+            <Card className="shadow-lg hover:shadow-xl transition-shadow">
+              <CardHeader className="items-center text-center">
+                <div className="p-3 bg-primary/10 rounded-full mb-3">
+                  <Lightbulb className="w-8 h-8 text-primary" />
+                </div>
+                <CardTitle className="text-xl">Detailed Insights</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center text-foreground/70">
+                Understand key elements, context, and details present within your images.
+              </CardContent>
+            </Card>
+            <Card className="shadow-lg hover:shadow-xl transition-shadow">
+              <CardHeader className="items-center text-center">
+                <div className="p-3 bg-primary/10 rounded-full mb-3">
+                  <BarChart2 className="w-8 h-8 text-primary" />
+                </div>
+                <CardTitle className="text-xl">File Information</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center text-foreground/70">
+                View comprehensive details about your image files, including type, size, and dimensions.
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </div>
+      </section>
+      
+      <section className="py-12 bg-card rounded-xl shadow-sm">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-8">
+          <div className="md:w-1/2">
+             <Image
+                src="https://placehold.co/600x400.png"
+                alt="AI Analysis Illustration"
+                width={600}
+                height={400}
+                className="rounded-lg shadow-md"
+                data-ai-hint="technology abstract"
+              />
+          </div>
+          <div className="md:w-1/2">
+            <h2 className="text-3xl font-semibold text-primary mb-4">How It Works</h2>
+            <p className="text-foreground/80 mb-3">
+              Our platform uses state-of-the-art AI models to process and understand your images.
+            </p>
+            <ol className="list-decimal list-inside space-y-2 text-foreground/70">
+              <li>Upload an image file from your device.</li>
+              <li>Our AI model processes the image content.</li>
+              <li>Receive a concise summary and detailed file information.</li>
+              <li>Gain valuable insights from your visual data.</li>
+            </ol>
+            <Link href="/analysis" className="mt-6 inline-block">
+               <Button variant="outline">
+                Try the Analyzer
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
