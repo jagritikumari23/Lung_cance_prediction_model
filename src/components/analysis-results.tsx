@@ -4,7 +4,8 @@
 import type { CTScanAnalysisOutput } from "@/ai/flows/ct-scan-analysis-flow";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FileText, Brain, AlertTriangle } from "lucide-react"; // Brain for AI, AlertTriangle for errors
+import { FileText, Brain, AlertTriangle, Percent, BarChartBig } from "lucide-react"; 
+import { Progress } from "@/components/ui/progress";
 
 interface FileInfo {
   name: string;
@@ -36,7 +37,22 @@ export default function AnalysisResults({ fileInfo, analysisResult, isLoadingAna
     }
   };
 
-  const isErrorResult = analysisResult?.explanation?.startsWith("Error during analysis");
+  const isErrorResult = analysisResult?.explanation?.startsWith("Error during analysis") || 
+                        analysisResult?.explanation?.startsWith("AI output was not in the expected format");
+
+  const renderProbability = (label: string, value?: number) => {
+    if (value === undefined || value === null) return null;
+    const percentage = value * 100;
+    return (
+      <div className="mb-2">
+        <div className="flex justify-between text-sm mb-0.5">
+          <span>{label}</span>
+          <span className="font-medium">{percentage.toFixed(1)}%</span>
+        </div>
+        <Progress value={percentage} className="h-2" />
+      </div>
+    );
+  };
 
   return (
     <div className="mt-6 sm:mt-8">
@@ -88,13 +104,17 @@ export default function AnalysisResults({ fileInfo, analysisResult, isLoadingAna
               <CardDescription>Click 'Analyze Scan' to generate a prediction.</CardDescription>
             )}
           </CardHeader>
-          <CardContent className="min-h-[80px] space-y-3"> {/* Ensure minimum height for content area */}
+          <CardContent className="min-h-[80px] space-y-4">
             {isLoadingAnalysis ? (
               <div className="space-y-2 pt-1">
                 <Skeleton className="h-5 w-1/3" />
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-5/6" />
                 <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-5 w-1/4 mt-2" />
+                <Skeleton className="h-3 w-1/2" />
+                <Skeleton className="h-3 w-1/2" />
+                <Skeleton className="h-3 w-1/2" />
               </div>
             ) : analysisResult ? (
               <>
@@ -107,11 +127,39 @@ export default function AnalysisResults({ fileInfo, analysisResult, isLoadingAna
                 {analysisResult.explanation && (
                   <div>
                     <span className="font-semibold text-muted-foreground">Explanation: </span>
-                    <p className={`text-sm leading-relaxed ${isErrorResult ? 'text-destructive' : ''}`}>{analysisResult.explanation}</p>
+                    <p className={`text-sm leading-relaxed ${isErrorResult ? 'text-destructive' : 'text-foreground/80'}`}>{analysisResult.explanation}</p>
                   </div>
                 )}
+
+                {analysisResult.confidenceScore !== undefined && analysisResult.confidenceScore !== null && (
+                  <div className="pt-2">
+                    <div className="flex items-center gap-2 text-md font-semibold">
+                       <Percent className="w-4 h-4 text-primary" />
+                       <span>Overall Confidence</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                       <Progress value={analysisResult.confidenceScore * 100} className="w-2/3 h-2.5" />
+                       <span className="text-sm font-medium text-foreground/90">
+                         {(analysisResult.confidenceScore * 100).toFixed(1)}%
+                       </span>
+                    </div>
+                  </div>
+                )}
+
+                {analysisResult.probabilities && (
+                  <div className="pt-2">
+                    <div className="flex items-center gap-2 text-md font-semibold mb-2">
+                      <BarChartBig className="w-4 h-4 text-primary" />
+                      <span>Probability Breakdown</span>
+                    </div>
+                    {renderProbability("Normal", analysisResult.probabilities.normal)}
+                    {renderProbability("Benign", analysisResult.probabilities.benign)}
+                    {renderProbability("Malignant", analysisResult.probabilities.malignant)}
+                  </div>
+                )}
+
                 {analysisResult.prediction && !isErrorResult && (
-                   <p className="text-xs text-muted-foreground pt-2">
+                   <p className="text-xs text-muted-foreground pt-3">
                      Disclaimer: This AI prediction is for informational purposes only and not a substitute for professional medical advice. Consult with a qualified healthcare provider for any health concerns or before making any decisions related to your health or treatment.
                    </p>
                 )}
