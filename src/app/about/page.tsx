@@ -1,12 +1,12 @@
 
 import type { Metadata } from 'next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Target, Zap, HeartPulse } from 'lucide-react'; // Using HeartPulse as a medical icon
+import { Users, Target, Zap, HeartPulse, ShieldCheck } from 'lucide-react'; // Using HeartPulse as a medical icon, added ShieldCheck
 import Image from 'next/image';
 
 export const metadata: Metadata = {
   title: 'About Us - LungLens AI',
-  description: 'Learn more about LungLens AI, our mission to aid in early lung cancer detection, and the technology behind our CT scan analysis tool.',
+  description: 'Learn more about LungLens AI, our mission to aid in early lung cancer detection, the technology behind our CT scan analysis tool, and our commitment to data security.',
 };
 
 export default function AboutPage() {
@@ -71,6 +71,36 @@ export default function AboutPage() {
               </Card>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="py-8">
+        <div className="container mx-auto px-4">
+          <Card className="shadow-lg w-full">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <ShieldCheck className="w-6 h-6 text-primary" />
+                Data Handling & Security
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-foreground/70 space-y-3">
+              <p>We prioritize the security and privacy of your data. Here’s how we handle information:</p>
+              <ul className="list-disc list-inside space-y-1.5 pl-4">
+                <li>
+                  <strong>Image Processing:</strong> Your CT scan images are processed in memory by our AI model to generate an analysis.
+                </li>
+                <li>
+                  <strong>No Permanent Storage:</strong> We do not permanently store your uploaded CT scan images or any derived sensitive health information on our application servers once the analysis is complete and the results are provided to you.
+                </li>
+                <li>
+                  <strong>Secure Communication:</strong> Communication between your browser and our backend services is encrypted and secured (using HTTPS and Next.js Server Actions) to protect your data during transmission.
+                </li>
+              </ul>
+              <p className="mt-4 text-xs text-muted-foreground">
+                Please note: The AI-driven analysis involves sending the image data to a third-party AI service (e.g., Google AI via Genkit). We recommend reviewing their respective data handling and privacy policies. LungLens AI acts as an interface to these services and does not control their data practices.
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
