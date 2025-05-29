@@ -106,7 +106,7 @@ export default function HistoryPage() {
         </CardHeader>
         <CardContent className="text-sm text-blue-600 dark:text-blue-300">
           <p>
-            This page currently displays <strong>mock data</strong>. For full functionality,
+            This page currently displays mock data. For full functionality,
             a backend database is required to store and retrieve historical analysis results
             for each authenticated user.
           </p>
