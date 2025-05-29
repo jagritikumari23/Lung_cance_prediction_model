@@ -1,4 +1,4 @@
 import { config } from 'dotenv';
 config();
 
-import '@/ai/flows/image-summary.ts';
+import '@/ai/flows/ct-scan-analysis-flow.ts';

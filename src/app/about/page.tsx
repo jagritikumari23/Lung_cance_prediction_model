@@ -1,12 +1,12 @@
 
 import type { Metadata } from 'next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Target, Zap } from 'lucide-react';
+import { Users, Target, Zap, HeartPulse } from 'lucide-react'; // Using HeartPulse as a medical icon
 import Image from 'next/image';
 
 export const metadata: Metadata = {
-  title: 'About Us - Image Insights',
-  description: 'Learn more about the Image Insights project, its mission, and the technology behind it.',
+  title: 'About Us - LungLens AI',
+  description: 'Learn more about LungLens AI, our mission to aid in early lung cancer detection, and the technology behind our CT scan analysis tool.',
 };
 
 export default function AboutPage() {
@@ -15,10 +15,10 @@ export default function AboutPage() {
       <section className="text-center py-12 lg:py-16">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-primary mb-4">
-            About Image Insights
+            About LungLens AI
           </h1>
           <p className="text-lg sm:text-xl text-foreground/80 max-w-3xl mx-auto">
-            Discover the story behind Image Insights, our mission, and the innovative technology that powers our platform.
+            Our mission is to leverage artificial intelligence to provide a powerful, accessible tool for the preliminary analysis of CT scans, aiding in the early detection of lung cancer.
           </p>
         </div>
       </section>
@@ -29,11 +29,11 @@ export default function AboutPage() {
             <div>
               <Image
                 src="https://placehold.co/600x400.png"
-                alt="Team working on project"
+                alt="Medical research team"
                 width={600}
                 height={400}
                 className="rounded-lg shadow-xl"
-                data-ai-hint="team collaboration"
+                data-ai-hint="medical research"
               />
             </div>
             <div className="space-y-6">
@@ -46,7 +46,7 @@ export default function AboutPage() {
                 </CardHeader>
                 <CardContent className="text-foreground/70">
                   <p>
-                    Our mission is to provide an accessible and powerful tool for users to gain meaningful insights from their images. We believe in leveraging cutting-edge AI to simplify complex image analysis, making it available to everyone, from casual users to professionals.
+                    To empower healthcare professionals and researchers with advanced AI tools for CT scan analysis, facilitating earlier and more accurate identification of potential lung abnormalities. We aim to contribute to better patient outcomes through technology.
                   </p>
                 </CardContent>
               </Card>
@@ -59,13 +59,13 @@ export default function AboutPage() {
                 </CardHeader>
                 <CardContent className="text-foreground/70">
                   <p>
-                    Image Insights is built with a modern tech stack to ensure performance, scalability, and a great user experience. We utilize:
+                    LungLens AI is built with a modern tech stack to ensure robust performance, security, and a seamless user experience for medical image analysis:
                   </p>
                   <ul className="list-disc list-inside mt-2 space-y-1">
-                    <li>Next.js for the frontend framework</li>
-                    <li>React for building dynamic user interfaces</li>
-                    <li>ShadCN UI components and Tailwind CSS for styling</li>
-                    <li>Genkit for integrating powerful AI capabilities</li>
+                    <li>Next.js for a responsive and fast frontend</li>
+                    <li>React for dynamic user interface components</li>
+                    <li>ShadCN UI and Tailwind CSS for a clean, professional design</li>
+                    <li>Genkit (with Google AI) for sophisticated CT scan image analysis and classification</li>
                   </ul>
                 </CardContent>
               </Card>
@@ -78,18 +78,18 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 text-center">
            <h2 className="text-3xl font-semibold text-primary mb-6">Meet the Team (Placeholder)</h2>
            <p className="text-foreground/70 max-w-2xl mx-auto mb-8">
-            Image Insights is developed by a dedicated team of AI enthusiasts and software engineers passionate about making technology accessible.
+            LungLens AI is developed by a dedicated team of AI specialists, software engineers, and medical imaging enthusiasts passionate about advancing healthcare technology.
            </p>
            <div className="flex justify-center items-center space-x-4">
                 <div className="flex flex-col items-center">
-                    <Image src="https://placehold.co/100x100.png" alt="Team Member 1" width={100} height={100} className="rounded-full mb-2" data-ai-hint="person portrait"/>
-                    <p className="font-semibold">AI Developer</p>
-                    <p className="text-sm text-muted-foreground">Lead AI Engineer</p>
+                    <Image src="https://placehold.co/100x100.png" alt="Team Member 1" width={100} height={100} className="rounded-full mb-2" data-ai-hint="scientist portrait"/>
+                    <p className="font-semibold">AI Researcher</p>
+                    <p className="text-sm text-muted-foreground">Lead AI & ML Developer</p>
                 </div>
                  <div className="flex flex-col items-center">
-                    <Image src="https://placehold.co/100x100.png" alt="Team Member 2" width={100} height={100} className="rounded-full mb-2" data-ai-hint="person portrait"/>
-                    <p className="font-semibold">App Prototyper</p>
-                    <p className="text-sm text-muted-foreground">Frontend Specialist</p>
+                    <Image src="https://placehold.co/100x100.png" alt="Team Member 2" width={100} height={100} className="rounded-full mb-2" data-ai-hint="developer portrait"/>
+                    <p className="font-semibold">Software Engineer</p>
+                    <p className="text-sm text-muted-foreground">Full-Stack Developer</p>
                 </div>
            </div>
         </div>

@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Image Insights',
-  description: 'Get AI-powered insights from your images.',
+  title: 'LungLens AI - CT Scan Analysis',
+  description: 'AI-powered CT scan analysis for early lung cancer detection. Get predictions: Normal, Malignant, or Benign.',
 };
 
 export default function RootLayout({

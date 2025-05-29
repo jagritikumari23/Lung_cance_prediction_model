@@ -1,14 +1,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, BarChart2, Lightbulb, Zap } from "lucide-react";
+import { ArrowRight, Target, SearchCheck, ShieldCheck } from "lucide-react"; // Updated icons
 import type { Metadata } from 'next';
 import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: 'Home - Image Insights',
-  description: 'Welcome to Image Insights. Get AI-powered insights from your images and photos.',
+  title: 'Home - LungLens AI',
+  description: 'Welcome to LungLens AI. AI-powered analysis of CT scans for early lung cancer detection.',
 };
 
 export default function HomePage() {
@@ -17,14 +17,14 @@ export default function HomePage() {
       <section className="text-center py-12 lg:py-16 bg-gradient-to-br from-primary/10 via-background to-background rounded-xl shadow-sm">
         <div className="container mx-auto px-4">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-primary mb-6">
-            Unlock Insights from Your Images
+            Advanced CT Scan Analysis for Lung Health
           </h1>
           <p className="text-lg sm:text-xl text-foreground/80 max-w-3xl mx-auto mb-8">
-            Upload your images and let our advanced AI provide you with detailed analysis, summaries, and more. Simple, fast, and powerful.
+            Upload your CT scans and let our AI provide predictions for Normal, Malignant, or Benign changes, aiding in early lung cancer detection.
           </p>
           <Link href="/analysis">
             <Button size="lg" className="text-lg py-7 px-10 shadow-lg hover:shadow-xl transition-shadow">
-              Start Analyzing Now <ArrowRight className="ml-2 h-5 w-5" />
+              Analyze CT Scan Now <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
         </div>
@@ -37,34 +37,34 @@ export default function HomePage() {
             <Card className="shadow-lg hover:shadow-xl transition-shadow">
               <CardHeader className="items-center text-center">
                 <div className="p-3 bg-primary/10 rounded-full mb-3">
-                  <Zap className="w-8 h-8 text-primary" />
+                  <SearchCheck className="w-8 h-8 text-primary" />
                 </div>
-                <CardTitle className="text-xl">Instant Analysis</CardTitle>
+                <CardTitle className="text-xl">AI-Powered Detection</CardTitle>
               </CardHeader>
               <CardContent className="text-center text-foreground/70">
-                Get quick and accurate AI-powered summaries and information about your uploaded images.
+                Leverage cutting-edge AI to analyze CT scan images for potential lung nodules and classify them.
               </CardContent>
             </Card>
             <Card className="shadow-lg hover:shadow-xl transition-shadow">
               <CardHeader className="items-center text-center">
                 <div className="p-3 bg-primary/10 rounded-full mb-3">
-                  <Lightbulb className="w-8 h-8 text-primary" />
+                  <Target className="w-8 h-8 text-primary" />
                 </div>
-                <CardTitle className="text-xl">Detailed Insights</CardTitle>
+                <CardTitle className="text-xl">Three-Class Prediction</CardTitle>
               </CardHeader>
               <CardContent className="text-center text-foreground/70">
-                Understand key elements, context, and details present within your images.
+                Receive clear predictions: Normal, Malignant, or Benign, to help inform further medical review.
               </CardContent>
             </Card>
             <Card className="shadow-lg hover:shadow-xl transition-shadow">
               <CardHeader className="items-center text-center">
                 <div className="p-3 bg-primary/10 rounded-full mb-3">
-                  <BarChart2 className="w-8 h-8 text-primary" />
+                  <ShieldCheck className="w-8 h-8 text-primary" />
                 </div>
-                <CardTitle className="text-xl">File Information</CardTitle>
+                <CardTitle className="text-xl">Secure & Informative</CardTitle>
               </CardHeader>
               <CardContent className="text-center text-foreground/70">
-                View comprehensive details about your image files, including type, size, and dimensions.
+                Your data is processed securely. Get detailed file information alongside AI analysis.
               </CardContent>
             </Card>
           </div>
@@ -76,23 +76,23 @@ export default function HomePage() {
           <div className="md:w-1/2">
              <Image
                 src="https://placehold.co/600x400.png"
-                alt="AI Analysis Illustration"
+                alt="CT Scan Analysis Illustration"
                 width={600}
                 height={400}
                 className="rounded-lg shadow-md"
-                data-ai-hint="technology abstract"
+                data-ai-hint="ct scan lungs"
               />
           </div>
           <div className="md:w-1/2">
             <h2 className="text-3xl font-semibold text-primary mb-4">How It Works</h2>
             <p className="text-foreground/80 mb-3">
-              Our platform uses state-of-the-art AI models to process and understand your images.
+              Our platform uses state-of-the-art AI models to analyze CT scan images for early signs of lung cancer.
             </p>
             <ol className="list-decimal list-inside space-y-2 text-foreground/70">
-              <li>Upload an image file from your device.</li>
-              <li>Our AI model processes the image content.</li>
-              <li>Receive a concise summary and detailed file information.</li>
-              <li>Gain valuable insights from your visual data.</li>
+              <li>Upload a DICOM or other standard CT image file.</li>
+              <li>Our AI model processes the scan to identify and classify abnormalities.</li>
+              <li>Receive a prediction (Normal, Malignant, Benign) and an explanation.</li>
+              <li>Use the insights as a supplementary tool for medical professionals.</li>
             </ol>
             <Link href="/analysis" className="mt-6 inline-block">
                <Button variant="outline">
