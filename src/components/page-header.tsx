@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Activity, Home, Info, UploadCloud, LogIn, LogOut } from "lucide-react";
+import { Activity, Home, Info, UploadCloud, LogIn, LogOut, HistoryIcon } from "lucide-react"; // Added HistoryIcon
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
@@ -14,6 +14,7 @@ export default function PageHeader() {
   const navItems = [
     { href: "/", label: "Home", icon: <Home className="h-4 w-4" />, public: true },
     { href: "/analysis", label: "Analyze Scan", icon: <UploadCloud className="h-4 w-4" />, public: false },
+    { href: "/history", label: "History", icon: <HistoryIcon className="h-4 w-4" />, public: false }, // Added History link
     { href: "/about", label: "About", icon: <Info className="h-4 w-4" />, public: true },
   ];
 
@@ -35,8 +36,8 @@ export default function PageHeader() {
         </Link>
         <nav className="flex items-center gap-1 sm:gap-2">
           {navItems.map((item) => {
-            if (!item.public && !user && !isLoading) return null; // Hide protected links if not logged in and not loading
-            if (!item.public && isLoading) { // Optionally show placeholder or hide for protected items during load
+            if (!item.public && !user && !isLoading) return null; 
+            if (!item.public && isLoading) { 
                  return (
                     <Button key={item.label} variant="ghost" disabled className="text-sm sm:text-base px-2 sm:px-3 py-1 sm:py-2">
                          <span className="w-4 h-4 mr-1.5 bg-muted-foreground/20 rounded animate-pulse"></span>
