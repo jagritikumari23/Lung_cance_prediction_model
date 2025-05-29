@@ -5,84 +5,85 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, HistoryIcon, DatabaseZap } from 'lucide-react'; // Added DatabaseZap
+import { AlertTriangle, HistoryIcon, DatabaseZap, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
-import type { Metadata } from 'next'; // Cannot be used in client components directly
-
-// Mock data for historical analyses
-const mockAnalyses = [
-  {
-    id: '1',
-    date: '2024-07-28',
-    imageName: 'scan_001.png',
-    prediction: 'Normal' as const,
-    confidence: 0.95,
-  },
-  {
-    id: '2',
-    date: '2024-07-27',
-    imageName: 'patient_x_ct.dcm',
-    prediction: 'Malignant' as const,
-    confidence: 0.88,
-  },
-  {
-    id: '3',
-    date: '2024-07-26',
-    imageName: 'lung_series_abc.jpg',
-    prediction: 'Benign' as const,
-    confidence: 0.75,
-  },
-  {
-    id: '4',
-    date: '2024-07-25',
-    imageName: 'chest_scan_final.png',
-    prediction: 'Normal' as const,
-    confidence: 0.99,
-  },
-];
+import { Skeleton } from '@/components/ui/skeleton';
 
 type AnalysisPrediction = "Normal" | "Malignant" | "Benign";
 
 interface HistoricalAnalysis {
-  id: string;
-  date: string;
+  id: string; // Or number, depending on your DB
+  date: string; // Or Date object, adjust formatting as needed
   imageName: string;
   prediction: AnalysisPrediction;
   confidence: number;
+  // Potentially add other fields like patientId, notes, etc. from your DB
 }
 
-// Note: Metadata should be defined in a server component or layout if dynamic,
-// or set via useEffect for client components if static and for browser tab only.
-// export const metadata: Metadata = { // This will not work in "use client" component for Next.js metadata
-//   title: 'Analysis History - LungLens AI',
-//   description: 'View your past CT scan analysis results.',
-// };
-
-
 export default function HistoryPage() {
-  const { user } = useAuth(); // Assuming you might want to fetch user-specific history later
+  const { user } = useAuth();
   const [analyses, setAnalyses] = useState<HistoricalAnalysis[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true); // For data fetching state
 
   useEffect(() => {
     document.title = 'Analysis History - LungLens AI';
-    // In a real application, you would fetch historical data for the logged-in user here.
-    // For now, we're using mock data.
-    if (user) {
-      setAnalyses(mockAnalyses);
-    }
+
+    const fetchHistory = async () => {
+      if (user) {
+        setIsLoadingHistory(true);
+        // In a real application, you would fetch historical data for the logged-in user here.
+        // Example:
+        // try {
+        //   const response = await fetch('/api/history'); // Replace with your actual API endpoint
+        //   if (!response.ok) {
+        //     throw new Error('Failed to fetch history');
+        //   }
+        //   const data: HistoricalAnalysis[] = await response.json();
+        //   setAnalyses(data);
+        // } catch (error) {
+        //   console.error("Error fetching history:", error);
+        //   // Optionally, show a toast notification for the error
+        // } finally {
+        //   setIsLoadingHistory(false);
+        // }
+
+        // For now, we'll simulate a delay and then set to empty or some placeholder if needed
+        // This example will just set loading to false after a delay, resulting in "No history found"
+        setTimeout(() => {
+          // setAnalyses([]); // Ensure it's empty if no data is fetched
+          setIsLoadingHistory(false);
+        }, 1500); // Simulate network delay
+      } else {
+        setIsLoadingHistory(false); // Not logged in, so not loading history
+        setAnalyses([]);
+      }
+    };
+
+    fetchHistory();
   }, [user]);
 
   const getPredictionBadgeVariant = (prediction: AnalysisPrediction) => {
     switch (prediction) {
       case 'Normal':
-        return 'default'; // Or a custom "success" variant if defined
+        return 'default';
       case 'Benign':
-        return 'secondary'; // Or a custom "warning" variant
+        return 'secondary';
       case 'Malignant':
         return 'destructive';
       default:
         return 'outline';
     }
+  };
+
+  const renderSkeletonRows = (count: number) => {
+    return Array.from({ length: count }).map((_, index) => (
+      <TableRow key={`skeleton-${index}`}>
+        <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+        <TableCell><Skeleton className="h-4 w-40" /></TableCell>
+        <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
+        <TableCell className="text-right"><Skeleton className="h-4 w-12" /></TableCell>
+      </TableRow>
+    ));
   };
 
   return (
@@ -110,10 +111,38 @@ export default function HistoryPage() {
             a backend database is required to store and retrieve historical analysis results
             for each authenticated user.
           </p>
+          <p className="mt-2">
+            You'll need to implement API endpoints (e.g., <code>/api/history</code>) to save and fetch data,
+            and then update this page to call those endpoints.
+          </p>
         </CardContent>
       </Card>
 
-      {analyses.length > 0 ? (
+      {isLoadingHistory ? (
+        <Card className="shadow-md">
+          <CardHeader>
+            <CardTitle>Loading Past Analyses...</CardTitle>
+            <CardDescription>
+              Fetching your historical CT scan analysis data.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Image Name</TableHead>
+                  <TableHead>Prediction</TableHead>
+                  <TableHead className="text-right">Confidence</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {renderSkeletonRows(3)}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      ) : analyses.length > 0 ? (
         <Card className="shadow-md">
           <CardHeader>
             <CardTitle>Your Past Analyses</CardTitle>
@@ -151,10 +180,12 @@ export default function HistoryPage() {
       ) : (
         <Card className="shadow-md">
           <CardContent className="pt-6">
-            <div className="flex flex-col items-center justify-center text-muted-foreground py-8">
+            <div className="flex flex-col items-center justify-center text-muted-foreground py-12">
               <HistoryIcon className="w-16 h-16 mb-4 opacity-50" />
-              <p className="text-lg">No analysis history found.</p>
-              <p className="text-sm">Upload and analyze a CT scan to see it here.</p>
+              <p className="text-lg font-semibold">No analysis history found.</p>
+              <p className="text-sm">
+                Once you analyze CT scans and the backend is integrated, your history will appear here.
+              </p>
             </div>
           </CardContent>
         </Card>
